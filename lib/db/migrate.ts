@@ -1,3 +1,4 @@
+import "./prefer-ipv4";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -12,7 +13,10 @@ for (const file of [".env.local", ".env"]) {
 }
 
 async function main() {
-  const url = process.env.DATABASE_URL;
+  // Migrations need a direct (non-pooled) connection: Neon's pooled
+  // DATABASE_URL goes through PgBouncer in transaction mode, which doesn't
+  // support the session-level operations drizzle-kit's migrator relies on.
+  const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
   if (!url) {
     throw new Error("DATABASE_URL is not set");
   }

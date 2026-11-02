@@ -8,7 +8,7 @@ copier-coller.
 ## Stack
 
 - Next.js (App Router, TypeScript) — front + API routes, déployable gratuitement sur Vercel.
-- Postgres (Neon/Supabase free tier) via Drizzle ORM, extension `pg_trgm` pour la similarité texte.
+- Postgres (Neon, projet `spring-heart-53730620`) via Drizzle ORM, extension `pg_trgm` pour la similarité texte.
 - LLM interchangeable : OpenRouter (modèle gratuit, défaut démo) ou Claude (`claude-sonnet-5-5`), via `LLM_PROVIDER`.
 
 ## Comment ça marche
@@ -29,14 +29,20 @@ copier-coller.
 
 ```bash
 npm install
-cp .env.example .env.local   # renseigner DATABASE_URL + OPENROUTER_API_KEY
+neon deploy                  # provisionne/relie Neon et écrit DATABASE_URL(_UNPOOLED) dans .env
 npm run db:generate          # régénère les migrations si le schéma change
 npm run db:migrate           # applique les migrations (crée les tables + pg_trgm)
 npm run dev
 ```
 
-Base de données gratuite : créer un projet sur [Neon](https://neon.tech) ou
-[Supabase](https://supabase.com), récupérer la connection string Postgres.
+Base de données : projet Neon `spring-heart-53730620` (org `org-snowy-cell-16603821`),
+géré via `neon.ts` + le CLI `neon`. `neon deploy` pull les variables
+(`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, ...) dans `.env`. Les migrations
+utilisent `DATABASE_URL_UNPOOLED` (connexion directe, requise par Neon pour
+les opérations de session) — voir `.env.example`.
+
+Neon Auth, Object Storage et Functions sont provisionnés (cf. `neon.ts`)
+mais pas utilisés par l'app, qui n'a besoin que de Postgres.
 
 Clé LLM gratuite : créer une clé sur [OpenRouter](https://openrouter.ai/keys)
 et choisir un modèle `:free` actuel sur
@@ -53,5 +59,5 @@ métier passe par l'abstraction `lib/llm/index.ts`.
 
 1. Push sur GitHub (déjà configuré).
 2. Importer le repo sur [Vercel](https://vercel.com/new).
-3. Renseigner les variables d'env (`DATABASE_URL`, `OPENROUTER_API_KEY`, etc.) dans les settings du projet Vercel.
-4. Lancer `npm run db:migrate` une fois (localement, pointé vers la base de prod) pour créer les tables.
+3. Renseigner les variables d'env (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `OPENROUTER_API_KEY`, etc. — copier depuis `.env` local) dans les settings du projet Vercel.
+4. `npm run db:migrate` a déjà été exécuté contre la base Neon de prod ; relancer uniquement après un `npm run db:generate` (nouvelle migration).
