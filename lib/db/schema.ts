@@ -4,6 +4,7 @@ import {
   text,
   timestamp,
   integer,
+  boolean,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
@@ -28,6 +29,15 @@ export const phrases = pgTable("phrases", {
   source: text("source").notNull().default("import"), // "import" | "generated"
   usageCount: integer("usage_count").notNull().default(0),
   lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const rules = pgTable("rules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  text: text("text").notNull(),
+  active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

@@ -1,6 +1,6 @@
 import { sql, eq, and, gt, desc, asc } from "drizzle-orm";
 import { db } from "./db/client";
-import { contexts, phrases } from "./db/schema";
+import { contexts, phrases, rules } from "./db/schema";
 import { getLlmProvider } from "./llm";
 import { buildSuggestPrompt, parseJsonResponse } from "./llm/prompts";
 
@@ -65,11 +65,17 @@ export async function suggestPhrase(params: {
     new Set([...(params.recentlyUsed ?? []), ...autoExcluded])
   );
 
+  const activeRules = await db
+    .select({ text: rules.text })
+    .from(rules)
+    .where(eq(rules.active, true));
+
   const llm = getLlmProvider();
   const { system, prompt } = buildSuggestPrompt({
     context: contextInput,
     candidates,
     excluded,
+    rules: activeRules.map((r) => r.text),
   });
   const raw = await llm.complete({ system, prompt, maxTokens: 512 });
   const result = parseJsonResponse<{ suggestion: string; reused: boolean }>(

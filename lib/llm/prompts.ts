@@ -28,18 +28,26 @@ export function buildSuggestPrompt(params: {
   context: string;
   candidates: string[];
   excluded: string[];
+  rules: string[];
 }): { system: string; prompt: string } {
   const system = [
     "Tu aides un chatteur d'agence OnlyFans à relancer une conversation sans se répéter.",
     "On te donne un contexte de discussion, une banque de phrases déjà écrites par le client pour ce contexte,",
-    "et une liste de phrases à éviter (déjà utilisées récemment, pour ne pas être redondant).",
+    "une liste de phrases à éviter (déjà utilisées récemment, pour ne pas être redondant),",
+    "et éventuellement des règles strictes à respecter.",
     "Choisis ou adapte légèrement UNE phrase de la banque qui n'est pas proche des phrases à éviter.",
     "Si toute la banque est trop proche des phrases à éviter, génère une nouvelle phrase dans le même ton/style que la banque.",
+    "Respecte impérativement toutes les règles listées.",
     "Réponds UNIQUEMENT avec un objet JSON: {\"suggestion\": \"<phrase>\", \"reused\": true|false}.",
   ].join("\n");
 
   const prompt = [
     `Contexte: ${params.context}`,
+    "",
+    "Règles à respecter:",
+    params.rules.length
+      ? params.rules.map((r) => `- ${r}`).join("\n")
+      : "(aucune)",
     "",
     "Banque de phrases disponibles:",
     params.candidates.length

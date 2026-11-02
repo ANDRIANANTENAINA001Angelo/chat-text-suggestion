@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
+/* Manual light/dark toggle via a `.dark` class on <html>, instead of only
+   following prefers-color-scheme — see components/ThemeScript + ThemeToggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f7fb;
+  --surface: #ffffff;
+  --surface-muted: #eef0f6;
+  --foreground: #161a2b;
+  --muted-foreground: #65708a;
+  --border: #dfe3ee;
+
+  --primary: #4338ca;
+  --primary-hover: #3730a3;
+  --primary-foreground: #ffffff;
+
+  --accent: #0f9d8c;
+  --accent-foreground: #ffffff;
+
+  --warning: #b45309;
+  --warning-bg: #fef3c7;
+  --danger: #be123c;
+  --danger-bg: #ffe4e6;
+
+  --ring: #4338ca;
+}
+
+:root.dark {
+  --background: #0f1222;
+  --surface: #171b2e;
+  --surface-muted: #1f2338;
+  --foreground: #e9eaf5;
+  --muted-foreground: #9499b5;
+  --border: #2a2f47;
+
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --primary-foreground: #14163a;
+
+  --accent: #2dd4bf;
+  --accent-foreground: #0b2a26;
+
+  --warning: #fbbf24;
+  --warning-bg: #3a2e0f;
+  --danger: #fb7185;
+  --danger-bg: #3a1420;
+
+  --ring: #818cf8;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  border-color: var(--border);
 }

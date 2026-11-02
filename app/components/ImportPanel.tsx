@@ -32,33 +32,36 @@ export function ImportPanel() {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-      <h2 className="text-lg font-semibold">Enrichir la base</h2>
-      <p className="text-sm text-zinc-500">
+    <div className="flex flex-col gap-4">
+      <p className="text-sm text-muted-foreground">
         Colle une liste de phrases (une par ligne). Le contexte de chacune
-        sera déduit automatiquement.
+        sera déduit automatiquement par l&apos;IA.
       </p>
       <textarea
-        className="min-h-[160px] rounded-lg border border-zinc-300 bg-transparent p-3 font-mono text-sm outline-none focus:border-zinc-500 dark:border-zinc-700"
+        className="min-h-[180px] resize-y rounded-lg border border-border bg-surface p-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring"
         placeholder={"Salut, ça va ?\nTu fais quoi de beau ce soir ?\n..."}
         value={rawText}
         onChange={(e) => setRawText(e.target.value)}
         disabled={loading}
       />
       <button
-        className="self-start rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background disabled:opacity-50"
+        className="self-start rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         onClick={handleImport}
         disabled={loading || rawText.trim().length === 0}
       >
         {loading ? "Analyse en cours..." : "Enrichir"}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
+          {error}
+        </p>
+      )}
       {result && (
-        <p className="text-sm text-emerald-600">
-          {result.imported} phrase(s) importée(s) — contextes:{" "}
+        <p className="rounded-lg bg-accent/10 px-3 py-2 text-sm text-accent">
+          {result.imported} phrase(s) importée(s) — contextes :{" "}
           {result.contexts.join(", ") || "aucun"}
         </p>
       )}
-    </section>
+    </div>
   );
 }
