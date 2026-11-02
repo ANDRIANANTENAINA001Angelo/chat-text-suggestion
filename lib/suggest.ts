@@ -1,4 +1,4 @@
-import { sql, eq, and, isNotNull, desc, asc } from "drizzle-orm";
+import { sql, eq, and, gt, desc, asc } from "drizzle-orm";
 import { db } from "./db/client";
 import { contexts, phrases } from "./db/schema";
 import { getLlmProvider } from "./llm";
@@ -55,13 +55,7 @@ export async function suggestPhrase(params: {
     const recentRows = await db
       .select({ text: phrases.text })
       .from(phrases)
-      .where(
-        and(
-          eq(phrases.contextId, matched.id),
-          isNotNull(phrases.lastUsedAt),
-          sql`${phrases.lastUsedAt} > ${cutoff}`
-        )
-      )
+      .where(and(eq(phrases.contextId, matched.id), gt(phrases.lastUsedAt, cutoff)))
       .orderBy(desc(phrases.lastUsedAt))
       .limit(RECENT_EXCLUDE_LIMIT);
     autoExcluded = recentRows.map((r) => r.text);
